@@ -2,20 +2,34 @@ import { useParams } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { getCourse } from "../api/courses"
 import { Link } from "react-router-dom"
+import api from "../api"
 
 export default function CourseDetail() {
-  const { id } = useParams()
-  const [course, setCourse] = useState(null)
+  const { id } = useParams();
+  const [course, setCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    getCourse(id).then((res) => {
-      setCourse(res.data)
-    })
-  }, [id])
+    console.log("Загружаю курс", id);
 
-  if (!course) {
-    return <h2 style={{ textAlign: "center", marginTop: "100px" }}>Loading...</h2>
-  }
+    api
+      .get(`/courses/${id}/`)
+      .then((res) => {
+        console.log("Курс получен:", res.data);
+        setCourse(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Ошибка:", err.response?.status, err.response?.data);
+        setError("Не удалось загрузить курс");
+        setLoading(false);
+      });
+  }, [id]);
+
+  if (loading) return <div style={{ color: "white", textAlign: "center", padding: "100px" }}>Loading...</div>;
+
+  if (error) return <div style={{ color: "red", textAlign: "center", padding: "100px" }}>{error}</div>;
 
   return (
     <div style={{ maxWidth: "900px", margin: "60px auto", color: "white" }}>

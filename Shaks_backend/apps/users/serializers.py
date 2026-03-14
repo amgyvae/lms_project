@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from .models import TeacherProfile, Profile
 from rest_framework import serializers
 
 User = get_user_model()
@@ -24,3 +25,32 @@ class MeSerializer(serializers.ModelSerializer):
         fields = ("id", "username", "email", "role")
         read_only_fields = ("role")
         
+class TeacherProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True) 
+    class Meta:
+        model = TeacherProfile
+        fields = [
+            'id',
+            'user',               
+            'username',           
+            'avatar',
+            'experience_years',
+            'bio',
+            'specialization',
+            'created_at',
+        ]
+        read_only_fields = ['id', 'created_at', 'username']  
+        
+class ProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username', read_only=True)
+    class Meta:
+        model = Profile
+        fields = [
+            'id',
+            'user',
+            'username',
+            'bio',
+            'avatar',
+            'phone',
+        ]
+        read_only_fields = ['id', 'username']
